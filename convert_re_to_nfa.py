@@ -3,7 +3,7 @@
 
 
 from string import ascii_lowercase
-from finite_automaton import FiniteAutomaton, run_operations
+from finite_automaton import FiniteAutomaton
 
 
 def shunt(infix):
@@ -58,73 +58,79 @@ def thompson_construction(RE, use_operation=True):
         c = RE[idx]
         if c == '*' and use_operation:
             fa = nfa_stack.pop()
-            new_fa = run_operations(fa, None, 'closure')
-            nfa_stack.append(new_fa)
+            fa.run_operations(type='closure')
+            nfa_stack.append(fa)
         elif c == '.' and use_operation:
             fa2 = nfa_stack.pop() 
             fa1 = nfa_stack.pop()
-            new_fa = run_operations(fa1, fa2, 'concatenation')
-            nfa_stack.append(new_fa)
+            fa1.run_operations(fa2, 'concatenation')
+            nfa_stack.append(fa1)
         elif c == '|' and use_operation:
             fa2 = nfa_stack.pop() 
             fa1 = nfa_stack.pop()
-            new_fa = run_operations(fa1, fa2, 'alternation')
-            nfa_stack.append(new_fa)
+            fa1.run_operations(fa2, 'alternation')
+            nfa_stack.append(fa1)
         elif c == '[' and use_operation:
             begin_idx = idx + 1
             while RE[idx] != ']':
                 idx += 1
                 end_idx = idx
             if RE[begin_idx:end_idx] == 'a-z':
-                new_fa = FiniteAutomaton()
-                end_state = new_fa.createState()
-                new_fa.accepting_states.append(end_state)
+                fa = FiniteAutomaton()
+                start_state = fa.createState()
+                end_state = fa.createState()
+                fa.accepting_states.append(end_state)
                 for i in ascii_lowercase:
-                    mid_state = new_fa.createState()
-                    new_fa.start_state.setNext(i, mid_state)
-                    mid_state.setNext('ϵ', end_state)
-                nfa_stack.append(new_fa)
+                    state = fa.createState()
+                    start_state.setNext(i, state)
+                    state.setNext('ϵ', end_state)
+                nfa_stack.append(fa)
             elif RE[begin_idx:end_idx] == 'A-Z':
-                new_fa = FiniteAutomaton()
-                end_state = new_fa.createState()
-                new_fa.accepting_states.append(end_state)
+                fa = FiniteAutomaton()
+                start_state = fa.createState()
+                end_state = fa.createState()
+                fa.accepting_states.append(end_state)
                 for i in ascii_lowercase.upper():
-                    mid_state = new_fa.createState()
-                    new_fa.start_state.setNext(i, mid_state)
-                    mid_state.setNext('ϵ', end_state)
-                nfa_stack.append(new_fa)
+                    state = fa.createState()
+                    start_state.setNext(i, state)
+                    state.setNext('ϵ', end_state)
+                nfa_stack.append(fa)
             elif RE[begin_idx:end_idx] == '0-9':
-                new_fa = FiniteAutomaton()
-                end_state = new_fa.createState()
-                new_fa.accepting_states.append(end_state)
+                fa = FiniteAutomaton()
+                start_state = fa.createState()
+                end_state = fa.createState()
+                fa.accepting_states.append(end_state)
                 for i in map(lambda x: str(x), range(10)):
-                    mid_state = new_fa.createState()
-                    new_fa.start_state.setNext(i, mid_state)
-                    mid_state.setNext('ϵ', end_state)
-                nfa_stack.append(new_fa)
+                    state = fa.createState()
+                    start_state.setNext(i, state)
+                    state.setNext('ϵ', end_state)
+                nfa_stack.append(fa)
             elif RE[begin_idx:end_idx] == '1-9':
-                new_fa = FiniteAutomaton()
-                end_state = new_fa.createState()
-                new_fa.accepting_states.append(end_state)
+                fa = FiniteAutomaton()
+                start_state = fa.createState()
+                end_state = fa.createState()
+                fa.accepting_states.append(end_state)
                 for i in map(lambda x: str(x), range(1, 10)):
-                    mid_state = new_fa.createState()
-                    new_fa.start_state.setNext(i, mid_state)
-                    mid_state.setNext('ϵ', end_state)
-                nfa_stack.append(new_fa)
+                    state = fa.createState()
+                    start_state.setNext(i, state)
+                    state.setNext('ϵ', end_state)
+                nfa_stack.append(fa)
         else:
-            new_fa = FiniteAutomaton()
-            end_state = new_fa.createState()
-            new_fa.accepting_states.append(end_state)
-            new_fa.start_state.setNext(c, end_state)
-            nfa_stack.append(new_fa)
+            fa = FiniteAutomaton()
+            start_state = fa.createState()
+            end_state = fa.createState()
+            fa.accepting_states.append(end_state)
+            start_state.setNext(c, end_state)
+            nfa_stack.append(fa)
         idx += 1
     return nfa_stack.pop()
 
 
 def thompson_construction_list_RE(REs):
-    output_fa = FiniteAutomaton()
-    end_state = output_fa.createState()
-    output_fa.accepting_states.append(end_state)
+    nfa = FiniteAutomaton()
+    start_state = nfa.createState()
+    end_state = nfa.createState()
+    nfa.accepting_states.append(end_state)
 
     for RE in REs:
         if RE not in [';', '=', '-', '*', '^', '(', ')']:
@@ -132,17 +138,18 @@ def thompson_construction_list_RE(REs):
         else:
             fa = thompson_construction(RE, use_operation=False)
         for state in fa.states:
-            output_fa.states.append(state)
-        output_fa.start_state.setNext('ϵ', fa.start_state)
+            nfa.states.append(state)
+        start_state.setNext('ϵ', fa.states[0])
         fa.accepting_states[0].setNext('ϵ', end_state)
-    output_fa.resetLabel()
-    return output_fa
+    nfa.resetLabel()
+    return nfa
 
 
 if __name__ == '__main__':
-    # test one
-    thompson_construction(shunt('0|([1-9].[0-9]*)')).getGVFile('test_nfa.gv')
+    # test some RE
+    thompson_construction(shunt('a.(b|c)*')).writeGVFile('test_nfa_1.gv')
+    thompson_construction(shunt('(a.b)|(a.c)')).writeGVFile('test_nfa_2.gv')
 
     # run all
     REs = ['b.e.g.i.n', 'e.n.d', 'E.O.F', 'p.r.i.n.t', 'i.n.t', 'w.h.i.l.e', 'd.o', ';', '=', '-', '*', '^', '(', ')', '([a-z]|[A-Z]).([a-z]|[A-Z]|[0-9])*', '0|([1-9].[0-9]*)']
-    thompson_construction_list_RE(REs).getGVFile('nfa.gv')
+    thompson_construction_list_RE(REs).writeGVFile('nfa.gv')
