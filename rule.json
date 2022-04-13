@@ -1,0 +1,61 @@
+{
+    "Program": [
+        ["begin", "Statements", "end", "EOF"]
+    ],
+    "Statements": [
+        ["Statement", ";", "Statements"],
+        ["ϵ"]
+    ],
+    "Statement": [
+        ["Decl"],
+        ["Assigment"],
+        ["Loop"],
+        ["print", "Expr"]
+    ],
+    "Decl": [
+        ["Type", "name", "Decl_"],
+        ["ϵ"]
+    ],
+    "Decl_": [
+        [";", "Type", "name", "Decl_"],
+        ["ϵ"]
+    ],
+    "Type": [
+        ["int"]
+    ],
+    "Assigment": [
+        ["name", "=", "Expr"]
+    ],
+    "Expr": [
+        ["Expr_1"]
+    ],
+    "Expr_1": [
+        ["Expr_2", "Expr_1_"]
+    ],
+    "Expr_1_": [
+        ["-", "Expr_2", "Expr_1_"],
+        ["ϵ"]
+    ],
+    "Expr_2": [
+        ["Expr_3", "Expr_2_"]
+    ],
+    "Expr_2_": [
+        ["*", "Expr_3", "Expr_2_"],
+        ["ϵ"]
+    ],
+    "Expr_3": [
+        ["Expr_4", "Expr_3_"]
+    ],
+    "Expr_3_": [
+        ["^", "Expr_4", "Expr_3_"],
+        ["ϵ"]
+    ],
+    "Expr_4": [
+        ["(", "Expr_1", ")"],
+        ["name"],
+        ["num"]
+    ],
+    "Loop": [
+        ["while", "Expr", "do", "begin", "Statements", "end"]
+    ]
+}

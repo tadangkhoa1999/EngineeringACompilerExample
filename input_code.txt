@@ -2,7 +2,7 @@ begin
 
 int abc123;
 
-abc123 = (abc123-123)-1
+abc123 = (abc123-123)-1;
 
 end
 

@@ -13,4 +13,8 @@ dot -Tpng test_dfa_1.gv -o dfa_images/test_1.png
 dot -Tpng test_dfa_2.gv -o dfa_images/test_2.png
 
 # run scanner
-python run_table_driven_scanners.py
+# python run_table_driven_scanners.py
+
+# run parser
+python LL\(1\)_parsing_table_parser.py
+dot -Tpng parsing_tree.gv -o parsing_tree.png
