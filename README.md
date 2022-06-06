@@ -55,3 +55,18 @@ To visualize NFA
 ```
 dot -Tpng nfa.gv -o nfa.png
 ```
+
+## Run Scanner
+```
+python run_table_driven_scanners.py
+```
+
+## Run parser
+```
+python LL\(1\)_parsing_table_parser.py
+```
+
+To visualize
+```
+dot -Tpng parsing_tree.gv -o parsing_tree.png
+```
