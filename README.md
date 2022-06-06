@@ -46,10 +46,6 @@ Priority (in descending order):
 - \*
 - \-
 
-Notes:
-- \-, \*: kết hợp trái
-- ^: kết hợp phải
-
 ## Convert RE to NFA
 ```
 python convert_re_to_nfa.py
